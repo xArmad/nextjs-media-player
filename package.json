@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@videojs/http-streaming": "^3.12.1",
+    "hls.js": "^1.5.11",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",

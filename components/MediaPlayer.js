@@ -1,40 +1,41 @@
-// components/MediaPlayer.js
-import { useEffect, useRef } from 'react';
-import videojs from 'video.js';
-import 'video.js/dist/video-js.css';
+import { useEffect, useRef, useState } from 'react';
+import Hls from 'hls.js';
 
-const MediaPlayer = ({ url }) => {
+const MediaPlayer = () => {
   const videoRef = useRef(null);
-  const playerRef = useRef(null);
+  const defaultVideoUrl = 'https://prod-ec-eu-central-1.video.pscp.tv/Transcoding/v1/hls/dk0l_P-AN2j9WOl7VFi7-XR8VKAlo5vnQpiD2D1UeOypzcAO1Bv8KSAZ5OIT6gUYwWKf10m5o2739tlcHcU47Q/transcode/eu-central-1/periscope-replay-direct-prod-eu-central-1-public/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0.eyJFbmNvZGVyU2V0dGluZyI6ImVuY29kZXJfc2V0dGluZ183MjBwMzBfMTAiLCJIZWlnaHQiOjcyMCwiS2JwcyI6Mjc1MCwiV2lkdGgiOjEyODB9.ldktM4fCFRfkP4ZEBfZPKtlAUNAcTPkoz994YJAzWpE/dynamic_playlist.m3u8?type=live';
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
 
   useEffect(() => {
-    // Make sure Video.js is only initialized once
-    if (!playerRef.current) {
-      const videoElement = videoRef.current;
-      if (!videoElement) return;
-
-      playerRef.current = videojs(videoElement, {
-        controls: true,
-        autoplay: true,
-        preload: 'auto',
-      });
-    } else {
-      // Update the player source
-      playerRef.current.src({ src: url, type: 'application/x-mpegURL' });
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoUrl);
+      hls.attachMedia(videoRef.current);
+    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+      videoRef.current.src = videoUrl;
     }
+  }, [videoUrl]);
 
-    // Cleanup function to dispose the video.js player
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.dispose();
-        playerRef.current = null;
-      }
-    };
-  }, [url]);
+  const handleVideoUrlChange = (event) => {
+    setVideoUrl(event.target.value);
+  };
+
+  const resetToDefault = () => {
+    setVideoUrl(defaultVideoUrl);
+  };
 
   return (
-    <div data-vjs-player>
-      <video ref={videoRef} className="video-js vjs-big-play-centered" />
+    <div>
+      <video ref={videoRef} controls width="100%" />
+      <div>
+        <input
+          type="text"
+          value={videoUrl}
+          onChange={handleVideoUrlChange}
+          placeholder="Enter HLS video URL"
+        />
+        <button onClick={resetToDefault}>Reset to Default</button>
+      </div>
     </div>
   );
 };
