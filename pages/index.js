@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import MediaPlayer from '../components/MediaPlayer';
 
-const DEFAULT_URL = 'https://path/to/your/hls/playlist.m3u8';
+const DEFAULT_URL = 'https://goozp2.djk87uujdj4nsd.shop/playlist/23366/afsvvvvv.101streams.online/caxi.m3u8';
 
 export default function Home() {
   const [url, setUrl] = useState(DEFAULT_URL);
